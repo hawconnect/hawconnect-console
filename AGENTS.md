@@ -1,0 +1,3 @@
+# HAWConnect Dash
+
+Read README, including its source attribution. Preserve upstream TanStack Start/React/Tailwind UI and AGPL notices. Use Bun, locked dependencies and Biome. Backend sibling `hawconnect-backend` exclusively owns the shared database. Never add database credentials to this repository or send personal calendar data to admin screens. All privileged operations require a backend-verified account (verified email, any domain) and explicit capabilities. No live migrations, emails, deployment, pushes or mock auth on production endpoints. Use isolated fixtures for browser tests and label them as such. Never hand-edit generated routeTree.gen.ts; run `bun run generate-routes`.

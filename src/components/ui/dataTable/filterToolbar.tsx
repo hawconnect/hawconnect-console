@@ -1,0 +1,78 @@
+import { IconX } from "@tabler/icons-react";
+import type { Column, Table } from "@tanstack/react-table";
+import { Button } from "#/components/ui/button";
+import {
+	DataTableFacetedFilter,
+	type FacetFilter,
+} from "#/components/ui/dataTable/facetedFilter";
+import { Input } from "#/components/ui/input";
+import { t, useLocale } from "#/lib/i18n";
+
+interface SearchFilter {
+	column: string;
+	title: string;
+}
+
+interface DataTableFilterToolbarProps<TData, TValue> {
+	table: Table<TData>;
+	searchFilter: SearchFilter | undefined;
+	selectFilters?: FacetFilter<TData, TValue>[];
+}
+
+export type FilterOptions<TData, TValue> = Omit<
+	DataTableFilterToolbarProps<TData, TValue>,
+	"table"
+>;
+
+export function DataTableFilterToolbar<TData, TValue>({
+	table,
+	searchFilter,
+	selectFilters,
+}: DataTableFilterToolbarProps<TData, TValue>) {
+	const locale = useLocale();
+
+	const isFiltered = table.getState().columnFilters.length > 0;
+
+	return (
+		<div className="flex flex-1 flex-wrap items-center gap-2">
+			{searchFilter && (
+				<Input
+					placeholder={t("Filtern nach {field}…").replace(
+						"{field}",
+						locale === "en"
+							? t(searchFilter.title).toLowerCase()
+							: t(searchFilter.title),
+					)}
+					value={
+						(table
+							.getColumn(searchFilter.column)
+							?.getFilterValue() as string) ?? ""
+					}
+					onChange={(event) =>
+						table
+							.getColumn(searchFilter.column)
+							?.setFilterValue(event.target.value)
+					}
+					className="h-8 w-full max-w-sm border-border/50 bg-card text-muted-foreground placeholder:text-muted-foreground/80 sm:w-auto sm:min-w-48"
+				/>
+			)}
+			{selectFilters?.map((filter) => (
+				<DataTableFacetedFilter
+					key={filter.title}
+					{...filter}
+					column={table.getColumn(filter.column) as Column<TData, TValue>}
+				/>
+			))}
+			{isFiltered && (
+				<Button
+					variant="ghost"
+					onClick={() => table.resetColumnFilters()}
+					className="h-8 shrink-0 px-2 lg:px-3"
+				>
+					{t("Löschen")}
+					<IconX stroke={1.75} className="ml-2 h-4 w-4" />
+				</Button>
+			)}
+		</div>
+	);
+}
